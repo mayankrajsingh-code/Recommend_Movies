@@ -2,6 +2,7 @@ import pandas as pd
 import streamlit as st
 import pickle
 import requests
+import gzip
 
 def fetch_poster (title):
     API_KEY = "1d2682c8"
@@ -14,7 +15,7 @@ def fetch_poster (title):
 def rec(movie):
 
     movie_index = movies[movies['title'] == movie].index[0]
-    distances = cs[movie_index]
+    distances = similarity[movie_index]
     movies_list = sorted(list(enumerate(distances)), reverse=True, key=lambda x: x[1])[1:6]
 
     recommended_movies=[]
@@ -28,7 +29,9 @@ def rec(movie):
 #All pickle files
 movies_dict=pickle.load(open('movies_dict.pkl','rb'))
 movies=pd.DataFrame(movies_dict)
-cs=pickle.load(open('cosim.pkl','rb'))
+with gzip.open("cosim.pkl.gz","rb") as f:
+    similarity=pickle.load(f)
+
 
 #Header
 st.title('Movie Recommender System')
